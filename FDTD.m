@@ -60,101 +60,63 @@ Ek3 = (2*dt)/(2*EE3+dt*ss3); % коэффициент при потерях пр
 Ek4 = (2*dt)/(2*EE4+dt*ss4); % коэффициент при потерях препятствия (кварцевое стекло)
 
 % ----- определение векторов в йчейке КРВО ------------
-Ez = zeros(nx, ny, nz);
-Ex = zeros(nx, ny, nz);
-Ey = zeros(nx, ny, nz);
-Hz = zeros(nx, ny, nz);
-Hx = zeros(nx, ny, nz);
-Hy = zeros(nx, ny, nz);
+Ez = zeros(nx, ny);
+Ex = zeros(nx, ny);
+Ey = zeros(nx, ny);
+Hz = zeros(nx, ny);
+Hx = zeros(nx, ny);
+Hy = zeros(nx, ny);
 
 % Присвоение расчетной области параметров свободного пространства
-EzKe = Ke1.*ones(nx, ny, nz);
-ExKe = Ke1.*ones(nx, ny, nz);
-EyKe = Ke1.*ones(nx, ny, nz);
-EzEk = Ek1.*ones(nx, ny, nz);
-ExEk = Ek1.*ones(nx, ny, nz);
-EyEk = Ek1.*ones(nx, ny, nz);
+EzKe = Ke1.*ones(nx, ny);
+ExKe = Ke1.*ones(nx, ny);
+EyKe = Ke1.*ones(nx, ny);
+EzEk = Ek1.*ones(nx, ny);
+ExEk = Ek1.*ones(nx, ny);
+EyEk = Ek1.*ones(nx, ny);
 
-antenna_arm = round(dd/4);
-%создание верхнего плеча вибратора
-EzKe(nx/2,ny/2,nz/2+1:nz/2+1+antenna_arm) = Ke2;
-ExKe(nx/2:nx/2-1, ny/2, nz/2+1+1:nz/2+1+antenna_arm) = Ke2;
-EyKe(nx/2, ny:ny/2-1, nz/2+1+1:nz/2+1+antenna_arm) = Ke2;
-EzEk(nx/2,ny/2,nz/2+1:nz/2+1+antenna_arm) = Ek2;
-ExEk(nx/2:nx/2-1, ny/2, nz/2+1+1:nz/2+1+antenna_arm) = Ek2;
-EyEk(nx/2, ny/2:ny/2-1, nz/2+1+1:nz/2+1+antenna_arm) = Ek2;
+% movie = VideoWriter('video.avi');  % создание объекта для записи видео
+% open(movie);  %открытие объекта для записи видео
 
-%создание нижнего плеча вибратора
-EzKe(nx/2,ny/2,nz/2-1-antenna_arm:nz/2-1) = Ke2;
-ExKe(nx/2:nx/2-1, ny/2, nz/2-1-antenna_arm+1:nz/2-1) = Ke2;
-EyKe(nx/2, ny/2:ny/2-1, nz/2-1-antenna_arm+1:nz/2-1) = Ke2;
-EzEk(nx/2,ny/2,nz/2-1-antenna_arm:nz/2-1) = Ek2;
-ExEk(nx/2:nx/2-1, ny/2, nz/2-1-antenna_arm+1:nz/2-1) = Ek2;
-EyEk(nx/2, ny/2:ny/2-1, nz/2-1-antenna_arm+1:nz/2-1) = Ek2;
-
-movie = VideoWriter('video.avi');  % создание объекта для записи видео
-open(movie);  %открытие объекта для записи видео
-
+%цикл для двумерной задачи
 for n = 1:Space
 U = A*sin(2*pi*f*n*dt); %напряжение изменяется по гармоническому закону
-Ez(nx/2,ny/2,nz/2) = -U/dz; %источник излучения находится в центре расчетной области
+Ez(nx/2,ny/2) = -U/dz; %источник излучения находится в центре расчетной области
 
-clear i j k
+clear i j 
 i = 1:nx;
 j = 1:ny-1;
-k = 1:nz-1;
-Hx(i,j,k) = Hx(i,j,k)-Kh.*((Ez(i,j+1,k)-Ez(i,j,k))/dy -(Ey(i,j,k+1)-Ey(i,j,k))/dz);
+Hx(i,j) = Hx(i,j)-Kh.*((Ez(i,j+1)-Ez(i,j))/dy);
 
-clear i j k
+clear i j 
 i = 1:nx-1;
 j = 1:ny;
-k = 1:nz-1;
-Hy(i,j,k) = Hy(i,j,k)-Kh.*((Ex(i,j,k+1)-Ex(i,j,k))/dz - (Ez(i+1,j,k)-Ez(i,j,k))/dx);
+Hy(i,j) = Hy(i,j)-Kh.*(-(Ez(i+1,j)-Ez(i,j))/dx);
 
-clear i j k
-i = 1:nx-1;
-j = 1:ny-1;
-k = 1:nz;
-Hz(i,j,k) = Hz(i,j,k)-Kh.*((Ey(i+1,j,k)-Ey(i,j,k))/dx - (Ex(i,j+1,k)-Ex(i,j,k))/dy);
-
-clear i j k
-i = 1:nx;
-j = 2:ny;
-k = 2:nz;
-Ex(i,j,k) = Ex(i,j,k).*ExKe(i,j,k)+ExEk(i,j,k).*((Hz(i,j,k)-Hz(i,j-1,k))/dy - (Hy(i,j,k)-Hy(i,j,k-1))/dz);
-
-clear i j k
-i = 2:nx;
-j = 1:ny;
-k = 2:nz;
-Ey(i,j,k) = Ey(i,j,k).*EyKe(i,j,k)+EyEk(i,j,k).*((Hx(i,j,k)-Hx(i,j,k-1))/dz - (Hz(i,j,k)-Hz(i-1,j,k))/dx);
-
-clear i j k
+clear i j 
 i = 2:nx;
 j = 2:ny;
-k = 1:nz;
-Ez(i,j,k) = Ez(i,j,k).*EzKe(i,j,k)+EzEk(i,j,k).*((Hy(i,j,k)-Hy(i-1,j,k))/dx - (Hx(i,j,k)-Hx(i,j-1,k))/dy);
-
+Ez(i,j) = Ez(i,j).*EzKe(i,j)+EzEk(i,j).*((Hy(i,j)-Hy(i-1,j))/dx - (Hx(i,j)-Hx(i,j-1))/dy);
 % Отображение прогресса вычислений
 % n
 % Space 
 
 %-------------------------------------------------------------------------------------------------------
 %--Визуализация моделирования. Анимация распространения ЭМП по заданному срезу
-EZ(:,:,1) = Ez(nx/2,:,:);
-[X,Y] = meshgrid(1:ny, 1:nz); %создание 2Д-сетки
-surf(X,Y,EZ); %построение поверхности
-caxis([-1 1]); %установка пределов цветной легенды
-shading interp; %изменяет цвет каждой клетки плавно (происходит интерполяция цветов в узлах сетки
-colormap jet; %установка цветовой палитры (от синего до красного)
-c = colorbar('Location', 'WestOutside'); %отображение палитры на рисунке
-ylabel(c, 'Ez(V/m)');  %вывод единицы измерения рядом с палитрой 
-grid on;
-
-view(90, 90);  %позиция записи видео http://matlab.izmiran.ru/help/techdoc/ref/view.html
-rect = [0 0 550 420]; %задание прямоугольной области, непонятно зачем
-F = getframe(gcf, rect); %получение кадра картинки через surf
-writeVideo(movie, F); %запись видео под названием "movie"
+% EZ(:,:,1) = Ez(nx/2,:,:);
+% [X,Y] = meshgrid(1:ny, 1:nz); %создание 2Д-сетки
+% surf(X,Y,EZ); %построение поверхности
+% caxis([-1 1]); %установка пределов цветной легенды
+% shading interp; %изменяет цвет каждой клетки плавно (происходит интерполяция цветов в узлах сетки
+% colormap jet; %установка цветовой палитры (от синего до красного)
+% c = colorbar('Location', 'WestOutside'); %отображение палитры на рисунке
+% ylabel(c, 'Ez(V/m)');  %вывод единицы измерения рядом с палитрой 
+% grid on;
+% 
+% view(90, 90);  %позиция записи видео http://matlab.izmiran.ru/help/techdoc/ref/view.html
+% rect = [0 0 550 420]; %задание прямоугольной области, непонятно зачем
+% F = getframe(gcf, rect); %получение кадра картинки через surf
+% writeVideo(movie, F); %запись видео под названием "movie"
 
 %-------------------------------------------------------------------------------------------------------
 
@@ -173,6 +135,10 @@ writeVideo(movie, F); %запись видео под названием "movie"
 
 end;
 
+
+n_Ez = Ez./max(Ez, [], 'all'); %нормировка z-компоненты поля Е
+mean_n_Ez = mean(n_Ez, 'all')   %определение среднего значения нормированной z-компоненты поля Е
+
 %-------------------------------------------------------------------------------------------------------
 %Визуализация моделирования.
 %График мгновенного значения z-компоненты поля Е в произвольном точке
@@ -187,7 +153,7 @@ end;
 %-------------------------------------------------------------------------------------------------------
 
 
-close(movie); %закрытие объекта для записи видео
+% close(movie); %закрытие объекта для записи видео
 
 
 
