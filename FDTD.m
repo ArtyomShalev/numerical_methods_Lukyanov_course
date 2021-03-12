@@ -75,24 +75,24 @@ EzEk = Ek1.*ones(nx, ny, nz);
 ExEk = Ek1.*ones(nx, ny, nz);
 EyEk = Ek1.*ones(nx, ny, nz);
 
-%создание верхнего плеча антенны 
-% EzKe(nx/2,ny/2,nz/2+1:nz/2+1+round(dd/4)) = Ke2;
-% ExKe(nx/2-1:nx/2, ny/2, nz/2+1+1:nz/2+1+round(dd/4)) = Ke2;
-% EyKe(nx/2, ny-1:ny/2, nz/2+1+1:nz/2+1+round(dd/4)) = Ke2;
-% EzEk(nx/2,ny/2,nz/2+1:nz/2+1+round(dd/4)) = Ek2;
-% ExEk(nx/2-1:nx/2, ny/2, nz/2+1+1:nz/2+1+round(dd/4)) = Ek2;
-% EyEk(nx/2, ny-1:ny/2, nz/2+1+1:nz/2+1+round(dd/4)) = Ek2;
+%создание верхнего плеча вибратора 
+EzKe(nx/2,ny/2,nz/2+1:nz/2+1+round(dd/4)) = Ke2;
+ExKe(nx/2:nx/2-1, ny/2, nz/2+1+1:nz/2+1+round(dd/4)) = Ke2;
+EyKe(nx/2, ny:ny/2-1, nz/2+1+1:nz/2+1+round(dd/4)) = Ke2;
+EzEk(nx/2,ny/2,nz/2+1:nz/2+1+round(dd/4)) = Ek2;
+ExEk(nx/2:nx/2-1, ny/2, nz/2+1+1:nz/2+1+round(dd/4)) = Ek2;
+EyEk(nx/2, ny/2:ny/2-1, nz/2+1+1:nz/2+1+round(dd/4)) = Ek2;
 
-%создание нижнего плеча
-% EzKe(nx,ny,nz/2-1-round(dd/4):nz/2-1) = Ke2;
-% ExKe(nx/2-1:nx/2, ny/2, nz/2-1-round(dd/4):nz/2-1+1) = Ke2;
-% EyKe(nx/2, ny-1:ny/2, nz/2-1-round(dd/4):nz/2-1+1) = Ke2;
-% EzEk(nx,ny,nz/2-1-round(dd/4):nz/2-1) = Ek2;
-% ExEk(nx/2-1:nx/2, ny/2, nz/2-1-round(dd/4):nz/2-1+1) = Ek2;
-% EyEk(nx/2, ny-1:ny/2, nz/2-1-round(dd/4):nz/2-1+1) = Ek2;
+%создание нижнего плеча вибратора
+EzKe(nx/2,ny/2,nz/2-1-round(dd/4):nz/2-1) = Ke2;
+ExKe(nx/2:nx/2-1, ny/2, nz/2-1-round(dd/4)+1:nz/2-1) = Ke2;
+EyKe(nx/2, ny/2:ny/2-1, nz/2-1-round(dd/4)+1:nz/2-1) = Ke2;
+EzEk(nx/2,ny/2,nz/2-1-round(dd/4):nz/2-1) = Ek2;
+ExEk(nx/2:nx/2-1, ny/2, nz/2-1-round(dd/4)+1:nz/2-1) = Ek2;
+EyEk(nx/2, ny/2:ny/2-1, nz/2-1-round(dd/4)+1:nz/2-1) = Ek2;
 
-% movie = VideoWriter('video.avi');  % создание объекта для записи видео
-% open(movie);  %открытие объекта для записи видео
+movie = VideoWriter('video.avi');  % создание объекта для записи видео
+open(movie);  %открытие объекта для записи видео
 
 for n = 1:Space
 U = A*sin(2*pi*f*n*dt); %напряжение изменяется по гармоническому закону
@@ -140,20 +140,20 @@ Ez(i,j,k) = Ez(i,j,k).*EzKe(i,j,k)+EzEk(i,j,k).*((Hy(i,j,k)-Hy(i-1,j,k))/dx - (H
 
 %-------------------------------------------------------------------------------------------------------
 %--Визуализация моделирования. Анимация распространения ЭМП по заданному срезу
-% EZ(:,:,1) = Ez(nx/2,:,:);
-% [X,Y] = meshgrid(1:ny, 1:nz); %создание 2Д-сетки
-% surf(X,Y,EZ); %построение поверхности
-% caxis([-1 1]); %установка пределов цветной легенды
-% shading interp; %изменяет цвет каждой клетки плавно (происходит интерполяция цветов в узлах сетки
-% colormap jet; %установка цветовой палитры (от синего до красного)
-% c = colorbar('Location', 'WestOutside'); %отображение палитры на рисунке
-% ylabel(c, 'Ez(V/m)');  %вывод единицы измерения рядом с палитрой 
-% grid on;
-% 
-% view(90, 90);  %позиция записи видео http://matlab.izmiran.ru/help/techdoc/ref/view.html
-% rect = [0 0 550 420]; %задание прямоугольной области, непонятно зачем
-% F = getframe(gcf, rect); %получение кадра картинки через surf
-% writeVideo(movie, F); %запись видео под названием "movie"
+EZ(:,:,1) = Ez(nx/2,:,:);
+[X,Y] = meshgrid(1:ny, 1:nz); %создание 2Д-сетки
+surf(X,Y,EZ); %построение поверхности
+caxis([-1 1]); %установка пределов цветной легенды
+shading interp; %изменяет цвет каждой клетки плавно (происходит интерполяция цветов в узлах сетки
+colormap jet; %установка цветовой палитры (от синего до красного)
+c = colorbar('Location', 'WestOutside'); %отображение палитры на рисунке
+ylabel(c, 'Ez(V/m)');  %вывод единицы измерения рядом с палитрой 
+grid on;
+
+view(90, 90);  %позиция записи видео http://matlab.izmiran.ru/help/techdoc/ref/view.html
+rect = [0 0 550 420]; %задание прямоугольной области, непонятно зачем
+F = getframe(gcf, rect); %получение кадра картинки через surf
+writeVideo(movie, F); %запись видео под названием "movie"
 
 %-------------------------------------------------------------------------------------------------------
 
@@ -168,25 +168,25 @@ Ez(i,j,k) = Ez(i,j,k).*EzKe(i,j,k)+EzEk(i,j,k).*((Hy(i,j,k)-Hy(i-1,j,k))/dx - (H
 %-------------------------------------------------------------------------------------------------------
 
 %Запись мгновенного значения z-составляющей поля E в произвольной точке
-Y(n) = abs(Ez(nx/2,ny/2,nz/2));
+% Y(n) = abs(Ez(nx/2,ny/2,nz/2));
 
 end;
 
 %-------------------------------------------------------------------------------------------------------
 %Визуализация моделирования.
 %График мгновенного значения z-компоненты поля Е в произвольном точке
-time_start = 0;
-time_end = 1/(Space*c);
-time_step = time_end/Space;
-time = time_start:time_step:time_end - time_step;
-plot(time,Y,'r','LineWidth',2);
-title('Ez(t) in (nx/2,ny/2,nz/2) coordinates');
-ylabel('Ez, uV/m');
-xlabel('t, s');
+% time_start = 0;
+% time_end = 1/(Space*c);
+% time_step = time_end/Space;
+% time = time_start:time_step:time_end - time_step;
+% plot(time,Y,'r','LineWidth',2);
+% title('Ez(t) in (nx/2,ny/2,nz/2) coordinates');
+% ylabel('Ez, uV/m');
+% xlabel('t, s');
 %-------------------------------------------------------------------------------------------------------
 
 
-% close(movie); %закрытие объекта для записи видео
+close(movie); %закрытие объекта для записи видео
 
 
 
