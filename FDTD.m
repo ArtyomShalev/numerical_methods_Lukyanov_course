@@ -75,21 +75,6 @@ EzEk = Ek1.*ones(nx, ny, nz);
 ExEk = Ek1.*ones(nx, ny, nz);
 EyEk = Ek1.*ones(nx, ny, nz);
 
-%создание верхнего плеча антенны 
-% EzKe(nx/2,ny/2,nz/2+1:nz/2+1+round(dd/4)) = Ke2;
-% ExKe(nx/2-1:nx/2, ny/2, nz/2+1+1:nz/2+1+round(dd/4)) = Ke2;
-% EyKe(nx/2, ny-1:ny/2, nz/2+1+1:nz/2+1+round(dd/4)) = Ke2;
-% EzEk(nx/2,ny/2,nz/2+1:nz/2+1+round(dd/4)) = Ek2;
-% ExEk(nx/2-1:nx/2, ny/2, nz/2+1+1:nz/2+1+round(dd/4)) = Ek2;
-% EyEk(nx/2, ny-1:ny/2, nz/2+1+1:nz/2+1+round(dd/4)) = Ek2;
-
-%создание нижнего плеча
-% EzKe(nx,ny,nz/2-1-round(dd/4):nz/2-1) = Ke2;
-% ExKe(nx/2-1:nx/2, ny/2, nz/2-1-round(dd/4):nz/2-1+1) = Ke2;
-% EyKe(nx/2, ny-1:ny/2, nz/2-1-round(dd/4):nz/2-1+1) = Ke2;
-% EzEk(nx,ny,nz/2-1-round(dd/4):nz/2-1) = Ek2;
-% ExEk(nx/2-1:nx/2, ny/2, nz/2-1-round(dd/4):nz/2-1+1) = Ek2;
-% EyEk(nx/2, ny-1:ny/2, nz/2-1-round(dd/4):nz/2-1+1) = Ek2;
 
 % movie = VideoWriter('video.avi');  % создание объекта для записи видео
 % open(movie);  %открытие объекта для записи видео
