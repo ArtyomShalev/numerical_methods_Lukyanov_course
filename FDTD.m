@@ -46,8 +46,6 @@ Space = round(5*dd*sqrt(3)); % время наблюдения за распро
 % ----- количество длин волн вдоль оси координат
 % ----- количество ячеек вдоль оси координат
 nx = round(10*dlyambda/1); %nx - ширина расчетной области в ячейках
-ny = round(10*dlyambda/1); %ny - ширина расчетной области в ячейках
-nz = round(10*dlyambda/1); %nz - ширина расчетной области в ячейках
 % ------ определение коэффициентов Kh, Ke, Ek ------------------------
 Kh = dt/MU1; % коэффициент при Н
 Ke1 = (1-((dt*ss1)/(2*EE1)))/(1+((dt*ss1)/(2*EE1))); % коэффициент при Е свободного пространтства
@@ -60,65 +58,22 @@ Ek3 = (2*dt)/(2*EE3+dt*ss3); % коэффициент при потерях пр
 Ek4 = (2*dt)/(2*EE4+dt*ss4); % коэффициент при потерях препятствия (кварцевое стекло)
 
 % ----- определение векторов в йчейке КРВО ------------
-Ez = zeros(nx, ny, nz);
-Ex = zeros(nx, ny, nz);
-Ey = zeros(nx, ny, nz);
-Hz = zeros(nx, ny, nz);
-Hx = zeros(nx, ny, nz);
-Hy = zeros(nx, ny, nz);
+Ez = zeros(nx);
+Hy = zeros(nx);
 
 % Присвоение расчетной области параметров свободного пространства
-EzKe = Ke1.*ones(nx, ny, nz);
-ExKe = Ke1.*ones(nx, ny, nz);
-EyKe = Ke1.*ones(nx, ny, nz);
-EzEk = Ek1.*ones(nx, ny, nz);
-ExEk = Ek1.*ones(nx, ny, nz);
-EyEk = Ek1.*ones(nx, ny, nz);
-
+EzKe = Ke1.*ones(nx);
+EzEk = Ek1.*ones(nx);
 
 % movie = VideoWriter('video.avi');  % создание объекта для записи видео
 % open(movie);  %открытие объекта для записи видео
 
 for n = 1:Space
 U = A*sin(2*pi*f*n*dt); %напряжение изменяется по гармоническому закону
-Ez(nx/2,ny/2,nz/2) = -U/dz; %источник излучения находится в центре расчетной области
+Ez(nx/2) = -U/dx; %источник излучения находится в центре расчетной области
 
-clear i j k
-i = 1:nx;
-j = 1:ny-1;
-k = 1:nz-1;
-Hx(i,j,k) = Hx(i,j,k)-Kh.*((Ez(i,j+1,k)-Ez(i,j,k))/dy -(Ey(i,j,k+1)-Ey(i,j,k))/dz);
 
-clear i j k
-i = 1:nx-1;
-j = 1:ny;
-k = 1:nz-1;
-Hy(i,j,k) = Hy(i,j,k)-Kh.*((Ex(i,j,k+1)-Ex(i,j,k))/dz - (Ez(i+1,j,k)-Ez(i,j,k))/dx);
-
-clear i j k
-i = 1:nx-1;
-j = 1:ny-1;
-k = 1:nz;
-Hz(i,j,k) = Hz(i,j,k)-Kh.*((Ey(i+1,j,k)-Ey(i,j,k))/dx - (Ex(i,j+1,k)-Ex(i,j,k))/dy);
-
-clear i j k
-i = 1:nx;
-j = 2:ny;
-k = 2:nz;
-Ex(i,j,k) = Ex(i,j,k).*ExKe(i,j,k)+ExEk(i,j,k).*((Hz(i,j,k)-Hz(i,j-1,k))/dy - (Hy(i,j,k)-Hy(i,j,k-1))/dz);
-
-clear i j k
-i = 2:nx;
-j = 1:ny;
-k = 2:nz;
-Ey(i,j,k) = Ey(i,j,k).*EyKe(i,j,k)+EyEk(i,j,k).*((Hx(i,j,k)-Hx(i,j,k-1))/dz - (Hz(i,j,k)-Hz(i-1,j,k))/dx);
-
-clear i j k
-i = 2:nx;
-j = 2:ny;
-k = 1:nz;
-Ez(i,j,k) = Ez(i,j,k).*EzKe(i,j,k)+EzEk(i,j,k).*((Hy(i,j,k)-Hy(i-1,j,k))/dx - (Hx(i,j,k)-Hx(i,j-1,k))/dy);
-
+%UPDATE EQUATIONS DUE TO THE JOHN B. SCHNEIDER
 % Отображение прогресса вычислений
 % n
 % Space 
